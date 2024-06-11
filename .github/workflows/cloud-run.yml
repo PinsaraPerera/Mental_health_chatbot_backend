@@ -13,10 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Decode and save service account key
-        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
-        shell: bash
-
       # Authenticate with Google Cloud
       - id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -51,6 +47,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Decode and save service account key
+        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
+        shell: bash
 
       - name: Build and push Docker image
         run: |
