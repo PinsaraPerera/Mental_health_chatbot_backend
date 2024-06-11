@@ -19,13 +19,11 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
 
-        # Setup gcloud CLI/SDK
+      # Setup gcloud CLI/SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.2.0
-
-      - name: Authenticate Docker
-        run: |
-          gcloud auth configure-docker
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
 
       # Create .env file with environment variables
       - name: Create .env file
@@ -37,20 +35,38 @@ jobs:
           echo DB_USER=${{ secrets.DB_USER }} >> .env
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo PRIVATE_IP=  >> .env
+          echo PRIVATE_IP=${{ secrets.PRIVATE_IP }} >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
 
-  Build-and-push-gcr-image:
+      # Save .env file as artifact
+      - name: Upload .env file
+        uses: actions/upload-artifact@v3
+        with:
+          name: env-file
+          path: .env
+
+  build-and-push-gcr-image:
     name: Continuous Delivery
     needs: integration
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Download .env file
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
+          path: .env
+
       - name: Decode and save service account key
         run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
         shell: bash
+
+      - name: Authenticate Docker
+        run: |
+          gcloud auth configure-docker --quiet
 
       - name: Build and push Docker image
         run: |
@@ -58,12 +74,20 @@ jobs:
           docker build -t $IMAGE .
           docker push $IMAGE
 
-  Continuous-Deployment:
-    needs: Build-and-push-gcr-image
+  continuous-deployment:
+    name: Continuous Deployment
+    needs: build-and-push-gcr-image
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Download .env file
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
+          path: .env
 
       - name: Deploy to Cloud Run
         run: |
@@ -75,4 +99,5 @@ jobs:
             --allow-unauthenticated \
             --memory 512Mi \
             --port 8000 \
-            --set-env-vars PROJECT_ID=${{ secrets.PROJECT_ID }},REGION=${{ secrets.REGION }},DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_APPLICATION_CREDENTIALS=/app/keys/service_account.json
+            --set-env-vars PROJECT_ID=${{ secrets.PROJECT_ID }},REGION=${{ secrets.REGION }},DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_APPLICATION_CREDENTIALS=/app/keys/service_account.json \
+            --project ${{ secrets.PROJECT_ID }}
