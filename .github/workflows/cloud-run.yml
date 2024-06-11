@@ -13,18 +13,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # Authenticate with Google Cloud
-      - id: "auth"
-        uses: "google-github-actions/auth@v1"
-        with:
-          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
-
-      # Setup gcloud CLI/SDK
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          project_id: ${{ secrets.PROJECT_ID }}
-
       # Create .env file with environment variables
       - name: Create .env file
         run: |
@@ -59,6 +47,18 @@ jobs:
         with:
           name: env-file
           path: .env
+
+      # Authenticate with Google Cloud
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+
+      # Setup gcloud CLI/SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
 
       - name: Decode and save service account key
         run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
