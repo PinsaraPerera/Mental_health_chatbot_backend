@@ -6,7 +6,7 @@ on:
       - main # Trigger deployment on push to the main branch
 
 jobs:
-  build-and-deploy:
+  integration:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
       - id: "auth"
         uses: "google-github-actions/auth@v1"
         with:
-            credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
 
         # Setup gcloud CLI/SDK
       - name: Set up Cloud SDK
@@ -44,16 +44,31 @@ jobs:
           echo PRIVATE_IP=  >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
 
+  Build-and-push-gcr-image:
+    name: Continuous Delivery
+    needs: integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Build and push Docker image
         run: |
-          IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/fastapi-backend:$GITHUB_SHA
+          IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/chatbot-backend:$GITHUB_SHA
           docker build -t $IMAGE .
           docker push $IMAGE
 
+  Continuous-Deployment:
+    needs: Build-and-push-gcr-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Deploy to Cloud Run
         run: |
-          IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/fastapi-backend:$GITHUB_SHA
-          gcloud run deploy fastapi-backend \
+          IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/chatbot-backend:$GITHUB_SHA
+          gcloud run deploy chatbot-backend \
             --image $IMAGE \
             --region ${{ secrets.REGION }} \
             --platform managed \
