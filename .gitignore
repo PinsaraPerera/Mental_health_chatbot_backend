@@ -1,0 +1,7 @@
+.venv
+.env
+/*.bin
+*.bin
+*.json
+/__pycache__/
+__pycache__/
