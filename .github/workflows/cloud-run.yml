@@ -89,6 +89,18 @@ jobs:
           name: env-file
           path: .env
 
+      # Authenticate with Google Cloud
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+
+      # Setup gcloud CLI/SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
       - name: Deploy to Cloud Run
         run: |
           IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/chatbot-backend:$GITHUB_SHA
