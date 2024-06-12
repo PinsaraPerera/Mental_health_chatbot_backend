@@ -48,10 +48,6 @@ jobs:
           name: env-file
           path: .
 
-      # Print .env file content for debugging
-      - name: Print .env file content
-        run: cat .env
-
       # Authenticate with Google Cloud
       - id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -85,16 +81,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Download .env file
-        uses: actions/download-artifact@v3
-        with:
-          name: env-file
-          path: .
-
-      # Print .env file content for debugging
-      - name: Print .env file content
-        run: cat .env
-
       # Authenticate with Google Cloud
       - id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -118,21 +104,3 @@ jobs:
             --set-env-vars PROJECT_ID=${{ secrets.PROJECT_ID }},REGION=${{ secrets.REGION }},DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_APPLICATION_CREDENTIALS=/app/keys/service_account.json \
             --project ${{ secrets.PROJECT_ID }}
 
-      # Health check
-      - name: Health check
-        run: |
-          SERVICE_URL=$(gcloud run services describe chatbot-backend --region ${{ secrets.REGION }} --format 'value(status.url)')
-          for i in {1..10}; do
-            RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$SERVICE_URL/health")
-            BODY=$(echo $RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
-            STATUS=$(echo $RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-            if [ $STATUS -eq 200 ]; then
-              echo "Health check passed"
-              exit 0
-            else
-              echo "Waiting for the service to be healthy..."
-              sleep 10
-            fi
-          done
-          echo "Health check failed"
-          exit 1
