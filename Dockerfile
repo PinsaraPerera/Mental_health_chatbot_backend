@@ -31,5 +31,8 @@ COPY gcloud-service-key.json /app/keys/service_account.json
 # Expose the port that the app runs on
 EXPOSE 8000
 
+# Add a healthcheck for better container management
+# HEALTHCHECK CMD curl --fail http://localhost:8000/health || exit 1
+
 # Command to run the application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
