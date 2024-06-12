@@ -48,6 +48,10 @@ jobs:
           name: env-file
           path: .env
 
+      # Print .env file content for debugging
+      - name: Print .env file content
+        run: cat .env
+
       # Authenticate with Google Cloud
       - id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -57,8 +61,6 @@ jobs:
       # Setup gcloud CLI/SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          project_id: ${{ secrets.PROJECT_ID }}
 
       - name: Decode and save service account key
         run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
@@ -76,7 +78,7 @@ jobs:
 
   continuous-deployment:
     name: Continuous Deployment
-    needs: build-and-push-gcr-image
+    needs: [integration, build-and-push-gcr-image]
     runs-on: ubuntu-latest
 
     steps:
@@ -89,6 +91,10 @@ jobs:
           name: env-file
           path: .env
 
+      # Print .env file content for debugging
+      - name: Print .env file content
+        run: cat .env
+
       # Authenticate with Google Cloud
       - id: "auth"
         uses: "google-github-actions/auth@v1"
@@ -98,12 +104,6 @@ jobs:
       # Setup gcloud CLI/SDK
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          project_id: ${{ secrets.PROJECT_ID }}
-
-      - name: Authenticate Docker
-        run: |
-          gcloud auth configure-docker --quiet
 
       - name: Deploy to Cloud Run
         run: |
