@@ -6,30 +6,12 @@ on:
       - main # Trigger deployment on push to the main branch
 
 jobs:
-  build-and-deploy:
+  integration:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Decode and save service account key
-        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
-        shell: bash
-
-      # Authenticate with Google Cloud
-      - id: "auth"
-        uses: "google-github-actions/auth@v1"
-        with:
-            credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
-
-        # Setup gcloud CLI/SDK
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.0
-
-      - name: Authenticate Docker
-        run: |
-          gcloud auth configure-docker
 
       # Create .env file with environment variables
       - name: Create .env file
@@ -41,14 +23,87 @@ jobs:
           echo DB_USER=${{ secrets.DB_USER }} >> .env
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo PRIVATE_IP=  >> .env
+          echo PRIVATE_IP=${{ secrets.PRIVATE_IP }} >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
+
+      # Save .env file as artifact
+      - name: Upload .env file
+        uses: actions/upload-artifact@v3
+        with:
+          name: env-file
+          path: .env
+
+  build-and-push-gcr-image:
+    name: Continuous Delivery
+    needs: integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download .env file
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
+          path: .env
+
+      # Authenticate with Google Cloud
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+
+      # Setup gcloud CLI/SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Decode and save service account key
+        run: echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ./gcloud-service-key.json
+        shell: bash
+
+      - name: Authenticate Docker
+        run: |
+          gcloud auth configure-docker --quiet
 
       - name: Build and push Docker image
         run: |
           IMAGE=gcr.io/${{ secrets.PROJECT_ID }}/chatbot-backend:$GITHUB_SHA
           docker build -t $IMAGE .
           docker push $IMAGE
+
+  continuous-deployment:
+    name: Continuous Deployment
+    needs: build-and-push-gcr-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download .env file
+        uses: actions/download-artifact@v3
+        with:
+          name: env-file
+          path: .env
+
+      # Authenticate with Google Cloud
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}"
+
+      # Setup gcloud CLI/SDK
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      - name: Authenticate Docker
+        run: |
+          gcloud auth configure-docker --quiet
 
       - name: Deploy to Cloud Run
         run: |
@@ -60,4 +115,24 @@ jobs:
             --allow-unauthenticated \
             --memory 512Mi \
             --port 8000 \
-            --set-env-vars PROJECT_ID=${{ secrets.PROJECT_ID }},REGION=${{ secrets.REGION }},DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_APPLICATION_CREDENTIALS=/app/keys/service_account.json
+            --set-env-vars PROJECT_ID=${{ secrets.PROJECT_ID }},REGION=${{ secrets.REGION }},DB_USER=${{ secrets.DB_USER }},DB_PASS=${{ secrets.DB_PASS }},DB_NAME=${{ secrets.DB_NAME }},GOOGLE_APPLICATION_CREDENTIALS=/app/keys/service_account.json \
+            --project ${{ secrets.PROJECT_ID }}
+
+      # Health check
+      - name: Health check
+        run: |
+          SERVICE_URL=$(gcloud run services describe chatbot-backend --region ${{ secrets.REGION }} --format 'value(status.url)')
+          for i in {1..10}; do
+            RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" "$SERVICE_URL/health")
+            BODY=$(echo $RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
+            STATUS=$(echo $RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+            if [ $STATUS -eq 200 ]; then
+              echo "Health check passed"
+              exit 0
+            else
+              echo "Waiting for the service to be healthy..."
+              sleep 10
+            fi
+          done
+          echo "Health check failed"
+          exit 1
