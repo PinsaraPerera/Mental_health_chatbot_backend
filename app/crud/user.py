@@ -5,6 +5,10 @@ from fastapi import HTTPException, status
 from app.utils import hashing
 
 def create(request: user_schema.User, db: Session):
+    existing_user = db.query(user.User).filter(user.User.email == request.email).first()
+    if existing_user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
     new_user = user.User(
         name=request.name,
         email=request.email,

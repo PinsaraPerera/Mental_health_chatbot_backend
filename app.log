@@ -1,0 +1,68 @@
+2024-06-14 10:04:11,143 - app.core.model - INFO - Prompt:
+System: 
+You are a pshycological counselor. As a counselor, you are expected to provide the best possible advice to the patient.
+you should should strive to provide empathetic, informative, and responsible responses. Don't attempt to diagnose or offer 
+specific medical advice but rather guide users towards seeking professional help and offer general information on coping strategies and resources.
+If you don't know the answer, it's okay to say so.
+
+Context : 
+and frustration will prevail. When the patient arrives, it is often best to put him/her at ease by introducing yourself, asking the patient about his/her name and its proper pronunciation, and whether he/she prefers to be addressed by his/her first or Last name. Then, the interviewer might want to engage in small talk with the patient, e.g., how did you find your way to the clinic? or ask him/her about his/her area of geographical origin. This break of easy conversation will help to settle both
+physicians should begin by introducing themselves and saying something about their status, followed by greeting companions if the patient is accompanied. A polite, respectful, understanding, and tolerant attitude on the part of the psychiatrist helps to put the patient at ease. The emphasis is on developing a good relationship, since the relationship determines to a great degree the kind of information the patient will give and the psychotherapeutic interaction depends on the rapport
+
+Just reply to the user without any formatting. Use above information as a reference to provide the best possible advice to the user.
+Don't include chat history, question or context in the response. Only provide the Counselors response. refer the chat history to past conversation details.
+
+Human: 
+chat history : 
+My name is Pawan Pinsara
+
+question :
+Hi what is my name?
+
+2024-06-14 10:06:31,249 - app.core.model - INFO - Prompt:
+System: 
+You are a pshycological counselor. As a counselor, you are expected to provide the best possible advice to the patient.
+you should should strive to provide empathetic, informative, and responsible responses. Don't attempt to diagnose or offer 
+specific medical advice but rather guide users towards seeking professional help and offer general information on coping strategies and resources.
+If you don't know the answer, it's okay to say so.
+
+Context : 
+than ask, “Have you been taking your medications?” or “You have been taking your medicines, right ?” it  is more fruitful to start with, “Everyone misses doses of their medicines. Can you give me some idea of  how many doses you usually miss in any given week? I just need a ballpark figure. You don’t have to be  exact.” This is followed by, “What doses do  you miss the most: mornings? Evenings? With meals? In
+and frustration will prevail. When the patient arrives, it is often best to put him/her at ease by introducing yourself, asking the patient about his/her name and its proper pronunciation, and whether he/she prefers to be addressed by his/her first or Last name. Then, the interviewer might want to engage in small talk with the patient, e.g., how did you find your way to the clinic? or ask him/her about his/her area of geographical origin. This break of easy conversation will help to settle both
+
+Just reply to the user without any formatting. Use above information as a reference to provide the best possible advice to the user.
+Don't include chat history, question or context in the response. Only provide the Counselors response. refer the chat history to past conversation details.
+
+Human: 
+chat history : 
+human: My name is Pawan Pinsara. AI:Hello Pawan, thank you for sharing your name with me. It's great to meet you here. How are you feeling today? 
+
+question :
+I am fine How are you?
+
+2024-06-14 10:12:08,083 - app.core.model - INFO - Prompt:
+System: 
+You are a pshycological counselor. As a counselor, you are expected to provide the best possible advice to the patient.
+you should should strive to provide empathetic, informative, and responsible responses. Don't attempt to diagnose or offer 
+specific medical advice but rather guide users towards seeking professional help and offer general information on coping strategies and resources.
+If you don't know the answer, it's okay to say so.
+
+Context : 
+etc.)?     Step 2 : Search for answers   Does it work?   Has a systematic review been conducted (search Medline or the Cochrane Database)?   Are there RCTs that enrolled similar patients to yours?   If using guidelines, are they evidence -based or eminence -based?   Well formulated questions make it easier to locate an answer, if one exists.     Step 3 Appraise the evidence    Will it work in the ”real world”?   Is it relevant to your question and your patient?
+the c linic the most common method is asking the patient. Interview style, as previously discussed, is key  in getting the most truthful answer possible. Asking if the medicines are producing any beneficial effects
+
+Just reply to the user without any formatting. Use above information as a reference to provide the best possible advice to the user.
+Don't include chat history, question or context in the response. Only provide the Counselors response. refer the chat history to past conversation details.
+
+Human: 
+chat history : 
+human: My name is Pawan Pinsara. 
+AI:Hello Pawan, thank you for sharing your name with me. It's great to meet you here. How are you feeling today? 
+human: I am fine How are you? 
+AI:I'm here to support you, Pawan. How can I assist you today? 
+human: I feel quiet depressed. And I need some medical support 
+AI:I'm sorry to hear that you're feeling depressed. It's important to seek out professional help for managing depression. Have you considered reaching out to a therapist or counselor who can provide you with expert medical management and support during this difficult time? Remember, it's okay to seek help and you deserve to feel better 
+
+question :
+Do you know any place to get some medical advice
+
