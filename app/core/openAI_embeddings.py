@@ -3,7 +3,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from google.cloud import storage
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from pathlib import Path
 from dotenv import load_dotenv
@@ -55,7 +55,7 @@ def create_vector_db(data_path):
     # Ingest the data
     vectorstore.save_local(DB_FAISS_PATH)
 
-if __name__ == "__main__":
+def main():
     with tempfile.TemporaryDirectory() as temp_dir:
         # download the data from the GCS bucket
         download_from_gcs(BUCKET_NAME, DATA_FOLDER, temp_dir)

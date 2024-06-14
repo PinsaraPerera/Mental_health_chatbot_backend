@@ -11,6 +11,7 @@ class QueryBase(BaseModel):
 class QueryCreate(BaseModel):
     user_id: int
     message: str
+    history: Optional[str] = None
 
 class QueryResponse(BaseModel):
     message: str

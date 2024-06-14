@@ -14,6 +14,7 @@ tiktoken
 unstructured
 python-dotenv
 langchain-huggingface
+langchain-openai
 google-cloud-storage
 cloud-sql-python-connector==1.9.2
 fastapi==0.111.0

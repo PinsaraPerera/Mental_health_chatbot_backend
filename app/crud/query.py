@@ -2,12 +2,21 @@ from sqlalchemy.orm import Session
 import app.models.query as query
 from app.schemas import query_schema
 from fastapi import HTTPException, status
+from app.core.model import final_result
+
+
 
 def create_query(db: Session, chat: query_schema.QueryCreate):
+    
+    response = final_result(chat.message, chat.history)
+
+    if not response:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Response not found. Try again later.")
+
     new_query = query.Query(
         user_id=chat.user_id,
         message=chat.message,
-        response="testing",
+        response=response,
     )
 
     db.add(new_query)

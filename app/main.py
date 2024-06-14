@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.base import Base
 from app.db.session import engine
-from app.api.endpoints import authentication, users, query
+from app.api.endpoints import authentication, users, query, train
 
 app = FastAPI()
 
@@ -24,3 +24,4 @@ Base.metadata.create_all(bind=engine)
 app.include_router(authentication.router)
 app.include_router(users.router)
 app.include_router(query.router)
+app.include_router(train.router)
