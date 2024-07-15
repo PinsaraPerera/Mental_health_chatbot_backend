@@ -15,11 +15,6 @@ def create_chat(db: Session, chat: chat_schema.ChatBase):
         db.refresh(new_chat)
         return new_chat
 
-def get_history(db: Session, chat_id: int):
+    
 
-    chat = db.query(conv.Chat).filter(conv.Chat.chat_id == chat_id).first()
-    if chat is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chat not found")
-    
-    
 

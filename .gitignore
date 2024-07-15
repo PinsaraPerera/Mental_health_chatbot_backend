@@ -8,3 +8,4 @@ __pycache__/
 test.yml
 test1.yml
 data
+app.log

@@ -18,6 +18,7 @@ from langchain.callbacks.base import BaseCallbackHandler
 import logging
 from typing import Any, Dict, List
 
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(__name__)
@@ -34,6 +35,8 @@ file_handler.setFormatter(formatter)
 _log.addHandler(file_handler)
 
 DB_FAISS_PATH = Path("vectorstores", "db_faiss")
+embeddings = OpenAIEmbeddings()
+db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
 
 system_template = """
 You are a pshycological counselor. As a counselor, you are expected to provide the best possible advice to the patient.
@@ -78,10 +81,6 @@ def load_llm():
 
 
 def get_context_from_vector_db(query):
-    embeddings = OpenAIEmbeddings()
-    db = FAISS.load_local(
-        DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True
-    )
 
     docs_with_scores = db.similarity_search_with_score(query, k=4)
 
