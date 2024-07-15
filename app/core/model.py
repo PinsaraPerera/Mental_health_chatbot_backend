@@ -128,6 +128,8 @@ def final_result(query, chat_history):
     prompt = set_custom_prompt()
     chain = qa_bot(prompt)
     input_data = {"chat_history": chat_history, "question": query, "context": context}
+
+    # setup custom callback
     chain_response = chain.invoke(input_data, config={"callbacks": [CustomHandler()]})
 
     # debuggingLLM({"chat_history": chat_history, "question": query, "context": context, "response": chain_response})
