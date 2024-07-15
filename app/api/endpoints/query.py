@@ -12,18 +12,10 @@ router = APIRouter(
 )
 
 
-@router.post("/chat", response_model=query_schema.QueryBase)
+@router.post("/message", response_model=query_schema.QueryResponse)
 def chat(chat: query_schema.QueryCreate, db: Session = Depends(get_db)):
     return query.create_query(db, chat)
 
-
-@router.get(
-    "/history/{user_id}/{limit}", response_model=List[query_schema.QueryResponse]
-)
-def get_history(
-    user_id: int,
-    limit: int,
-    db: Session = Depends(get_db),
-    current_user: user_schema.User = Depends(oauth2.get_current_user),
-):
-    return query.get_history(db, user_id, limit)
+@router.post("/history", response_model=query_schema.QueryHistory)
+def get_history(request: query_schema.QueryBase, db: Session = Depends(get_db)):
+    return query.get_history(db, request)

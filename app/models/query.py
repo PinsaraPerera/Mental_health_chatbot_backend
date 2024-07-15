@@ -8,6 +8,7 @@ class Query(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    chat_id = Column(Integer, ForeignKey("chats.chat_id"), nullable=False)
     message = Column(String)
     response = Column(String)
     date_created = Column(DateTime, default=func.now(), nullable=False)
