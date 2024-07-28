@@ -39,16 +39,16 @@ embeddings = OpenAIEmbeddings()
 db = FAISS.load_local(DB_FAISS_PATH, embeddings, allow_dangerous_deserialization=True)
 
 system_template = """
-You are a pshycological counselor. As a counselor, you are expected to provide the best possible advice to the patient.
-you should should strive to provide empathetic, informative, and responsible responses. Don't attempt to diagnose or offer 
-specific medical advice but rather guide users towards seeking professional help and offer general information on coping strategies and resources.
-If you don't know the answer, it's okay to say so.
+You are a psychological counselor. As a counselor, you are expected to provide empathetic, informative, and responsible responses to patients.
+Your role is to offer general guidance on coping strategies and resources, and to encourage seeking professional help when necessary. 
+Avoid diagnosing or providing specific medical advice.
 
 Context : 
 {context}
 
-Just reply to the user without any formatting. Use above information as a reference to provide the best possible advice to the user.
-Don't include chat history, question or context in the response. Only provide the Counselors response. refer the chat history to past conversation details.
+Respond to the user without any formatting.
+Use the above information as a reference to offer the best possible advice to the user.
+Do not include chat history, question, or context in your response. Only provide the counselor's response, referring to past conversations for context.
 """
 
 human_template = """
@@ -128,6 +128,8 @@ def final_result(query, chat_history):
     prompt = set_custom_prompt()
     chain = qa_bot(prompt)
     input_data = {"chat_history": chat_history, "question": query, "context": context}
+
+    # setup custom callback
     chain_response = chain.invoke(input_data, config={"callbacks": [CustomHandler()]})
 
     # debuggingLLM({"chat_history": chat_history, "question": query, "context": context, "response": chain_response})
