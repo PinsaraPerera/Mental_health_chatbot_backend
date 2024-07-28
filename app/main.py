@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.base import Base
 from app.db.session import engine
-from app.api.endpoints import authentication, users, query, train, chat
+from app.api.endpoints import authentication, users, query, train, chat, doctor
 
 app = FastAPI()
 
@@ -26,3 +26,4 @@ app.include_router(users.router)
 app.include_router(query.router)
 app.include_router(train.router)
 app.include_router(chat.router)
+app.include_router(doctor.router)
