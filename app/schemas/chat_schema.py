@@ -12,6 +12,9 @@ class Chat(BaseModel):
     chat_id: int
     topic: str
 
+    class Config:
+        from_attributes=True
+
 class ChatUpdate(BaseModel):
     topic: str
 
