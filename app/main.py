@@ -9,7 +9,9 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:8080",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://liora-16394175797.us-central1.run.app"
+
 ]
 
 app.add_middleware(
