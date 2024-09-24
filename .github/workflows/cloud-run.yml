@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: env-file
-          path: $GITHUB_WORKSPACE/.env
+          path: $GITHUB_WORKSPACE/
 
   build-and-push-gcr-image:
     name: Continuous Delivery
