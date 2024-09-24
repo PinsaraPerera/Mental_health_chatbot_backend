@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: env-file
-          path: .env
+          path: /.env
 
   build-and-push-gcr-image:
     name: Continuous Delivery
