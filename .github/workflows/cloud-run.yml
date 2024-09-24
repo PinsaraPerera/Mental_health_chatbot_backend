@@ -29,7 +29,7 @@ jobs:
 
       # Save .env file as artifact
       - name: Upload .env file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: env-file
           path: .env
