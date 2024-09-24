@@ -23,7 +23,6 @@ jobs:
           echo DB_USER=${{ secrets.DB_USER }} >> .env
           echo DB_PASS=${{ secrets.DB_PASS }} >> .env
           echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo PRIVATE_IP=${{ secrets.PRIVATE_IP }} >> .env
           echo OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} >> .env
           echo BUCKET_NAME=${{ secrets.BUCKET_NAME }} >> .env
 
